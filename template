@@ -1,0 +1,234 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Photos Library, Amazon Rekognition Lab, will quickly build a intelligent photos library in your aws account.",
+    "Parameters": {
+        "LibraryBucketName": {
+            "Type" : "String",
+            "Description" : "Source bucket name which bucket name you have chosen to store the photos."
+        },
+        "StaticWebsiteBucketName": {
+            "Type" : "String",
+            "Description" : "Static website bucket name which bucket name you will choose to store the static website."
+        }
+    },
+    "Resources": {
+        "S3LibraryBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref" : "LibraryBucketName"}
+            }
+        },
+        "S3LibraryBucketPolicy": {
+            "Type" : "AWS::S3::BucketPolicy",
+            "Properties" : {
+                "Bucket" : {"Ref" : "LibraryBucketName"},
+                "PolicyDocument": {
+                    "Statement":[ {
+	                    "Action": [
+	                        "s3:Get*",
+                            "s3:List*"
+                        ],
+	                    "Effect": "Allow",
+	                    "Resource": {"Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "LibraryBucketName" }, "/*"]]},
+	                    "Principal": "*"
+                    } ]
+                }
+            },
+            "DependsOn": [
+                "S3LibraryBucket"
+            ]
+        },
+        "S3StaticWebBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": {"Ref" : "StaticWebsiteBucketName"},
+                "WebsiteConfiguration": {
+                    "ErrorDocument" : "error.html",
+                    "IndexDocument" : "index.html"
+                },
+                "AccessControl": "PublicRead"
+            }
+        },
+        "S3StaticWebBucketPolicy": {
+            "Type" : "AWS::S3::BucketPolicy",
+            "Properties" : {
+                "Bucket" : {"Ref" : "StaticWebsiteBucketName"},
+                "PolicyDocument": {
+                    "Statement":[ {
+	                    "Action": [
+	                        "s3:Get*",
+                            "s3:List*"
+                        ],
+	                    "Effect": "Allow",
+	                    "Resource": {"Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "StaticWebsiteBucketName" }, "/*"]]},
+	                    "Principal": "*"
+                    } ]
+                }
+            },
+            "DependsOn": [
+                "S3StaticWebBucket"
+            ]
+        },
+        "CognitoIdentityPool": {
+            "Type": "AWS::Cognito::IdentityPool",
+            "Properties" : {
+                "IdentityPoolName" : "photos_library_identity_pool",
+                "AllowUnauthenticatedIdentities" : true
+            }
+        },
+        "IAMCognitoUnauth": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Federated": "cognito-identity.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRoleWithWebIdentity",
+                        "Condition": {
+                            "StringEquals": {
+                                "cognito-identity.amazonaws.com:aud": {"Ref" : "CognitoIdentityPool"}
+                            },
+                            "ForAnyValue:StringLike": {
+                                "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                            }
+                        }
+                    }
+                    ]
+                },
+                "Path": "/",
+                "RoleName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            {
+                                "Ref": "AWS::Region"
+                            },
+                            "photos-library-cognito-unauth"
+                        ]
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AWS::Region"
+                                    },
+                                    "photos-library-cognito-unauth-policy"
+                                ]
+                            ]
+                        },
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "mobileanalytics:PutEvents",
+                                        "cognito-sync:*"
+                                    ],
+                                    "Resource": [
+                                        "*"
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:*"
+                                    ],
+                                    "Resource": [
+                                        {"Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "LibraryBucketName" }]]},
+                                        {"Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "LibraryBucketName" }, "/*"]]}
+                                    ]
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "rekognition:*"
+                                    ],
+                                    "Resource": [
+                                        "*"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "DependsOn": [
+                "CognitoIdentityPool",
+                "S3LibraryBucket"
+            ]
+        },
+        "Elasticsearch": {
+            "Type": "AWS::Elasticsearch::Domain",
+            "Properties" : {
+                "DomainName": "photos-library",
+                "ElasticsearchClusterConfig": {
+                    "DedicatedMasterEnabled": "false",
+                    "InstanceCount": "1",
+                    "ZoneAwarenessEnabled": "false",
+                    "InstanceType": "m3.medium.elasticsearch"
+                },
+                "EBSOptions": {
+                    "EBSEnabled": true,
+                    "Iops": 0,
+                    "VolumeSize": 20,
+                    "VolumeType": "gp2"
+                },
+                "SnapshotOptions": {
+                    "AutomatedSnapshotStartHour": "0"
+                },
+                "AccessPolicies": {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": {"Fn::GetAtt": ["IAMCognitoUnauth", "Arn"]}
+                        },
+                        "Action": "es:*",
+                        "Resource": {"Fn::Join": ["", ["arn:aws:es:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":domain/photos-library/*"]]}
+                    }]
+                }
+            },
+            "DependsOn": [
+                "IAMCognitoUnauth"
+            ]
+        },
+        "CognitoPolicy": {
+            "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+            "Properties" : {
+                "IdentityPoolId" : {"Ref" : "CognitoIdentityPool"},
+                "Roles" : {"unauthenticated": { "Fn::GetAtt" : [ "IAMCognitoUnauth", "Arn" ] }}
+            },
+            "DependsOn": [
+                "IAMCognitoUnauth",
+                "CognitoIdentityPool"
+            ]
+        }
+    },
+    "Outputs" : {
+        "RegionId": {
+            "Value" : {"Ref": "AWS::Region"},
+            "Description" : "AWS region ID."
+        },
+        "WebsiteURL" : {
+            "Value" : { "Fn::GetAtt" : [ "S3StaticWebBucket", "WebsiteURL" ] },
+            "Description" : "URL for static web hosted on S3 bucket."
+        },
+        "CognitoPoolId": {
+            "Value": {"Ref": "CognitoIdentityPool"},
+            "Description" : "Cognito Identity Pool Id."
+        },
+        "ESEndpoint": {
+            "Value": { "Fn::GetAtt" : [ "Elasticsearch", "DomainEndpoint" ] },
+            "Description" : "Elasticsearch endpoint."
+        }
+    }
+}

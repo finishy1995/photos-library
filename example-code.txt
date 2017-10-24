@@ -1,0 +1,27 @@
+// Part 1
+var param1 = {MinConfidence: MODERATION_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
+rekognition.detectModerationLabels(param1, function(err, data) {
+	if (err == null) {
+		if (data.ModerationLabels.length > 0) {
+			alert("We detect explicit or suggestive adult content in your images. Please choose another one!");
+			return;
+		}
+
+		Upload_Photos();
+	} else {
+		console.log(err);
+	}
+});
+
+// Part 2
+var param2 = {MaxLabels: MAX_LABELS, MinConfidence: LABELS_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
+file_labels = [];
+rekognition.detectLabels(param2, function(err, data) {
+	if (err == null) {
+		for (var i = 0; i < data.Labels.length; i++) {
+			file_labels.push([data.Labels[i].Name, Math.round(data.Labels[i].Confidence * 100) / 100]);
+		}
+	} else {
+		console.log(err);
+	}
+});

@@ -1,0 +1,67 @@
+<DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="David Wang 王元恺">
+	<meta name="date" content="2017-10-01">
+
+	<title>Amazon Rekognition Lab</title>
+
+	<link href="./css/bootstrap.min.css" rel="stylesheet">
+	<link href="./css/common.css" rel="stylesheet">
+
+	<script src="./js/configuration.js"></script>
+	<script src="./js/aws-sdk-2.125.0.min.js"></script>
+	<script src="./js/common.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<div class="page-header">
+					<h1>Photos Library<small>Amazon Rekognition Lab</small></h1>
+				</div>
+			</div>
+		</div>
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<h3>Upload Photos</h3>
+				<p>In this part, you can upload your own photos or load the demo photos. Besides, the photos need to be detected explicit or suggestive adult content in the photos. Only legally photos will allow to upload.</p>
+				<input type="file" id="pictue-file" alt="Please upgrade the browser version to support the file upload function." onchange="Detect_And_Upload_Photos(this)">
+				<a class="btn btn-primary btn-large" style="margin-top: 20px" onclick="Load_Demo_Photos()">Load demo photos</a>
+				<hr style="margin-top: 40px"/>
+			</div>
+		</div>
+		<div class="row clearfix">
+			<div class="col-md-12 column" id="photos-module">
+				<h3>Photos</h3>
+				<p>In this part, you can see the photos divided with some labels. For convenience, these labels help to automatic classify photos and search photos more quickly and straightforward, especially too many photos stored.</p>
+				<div class="col-md-6 column">
+					<div class="input-group">
+                    	<input type="text" class="form-control" id="photos-search-input" placeholder="Please enter the label name." onKeyPress="Get_Key(event);" style="height: 40px"/>
+                    	<span class="input-group-btn">
+                        	<button class="btn btn-search btn-info" type="button" onclick="Search_Photos()" style="height: 40px">Go</button>
+                    	</span>
+                	</div>
+				</div>
+				<div class="col-md-6 column">
+				</div>
+				<div class="photos-list col-md-12" id="photos-list">
+				</div>
+				<hr style="margin-top: 40px" id="photos-module-line" class="col-md-12" />
+			</div>
+		</div>
+		<div class="row clearfix footer">
+			<div class="col-md-12 column">
+				<p>Amazon Rekognition is a service that makes it easy to add image analysis to your applications. With Rekognition, you can detect objects, scenes, faces; recognize celebrities; and identify inappropriate content in images. You can also search and compare faces. Rekognition’s API enables you to quickly add sophisticated deep learning-based visual search and image classification to your applications. For more information, please go to <a target="_blank" href="https://amazonaws-china.com/cn/iot-platform/">https://amazonaws-china.com/cn/iot-platform/</a></p>
+				<p>Copyright © Amazon Web Services 2017</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
