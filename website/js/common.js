@@ -263,7 +263,11 @@ function Draw_Photo(data) {
 			photo_image.style.marginLeft = Math.round((image_height - img.width * image_height / img.height) / 2) + "px";
 		}
 	}
-	img.src = "https://s3-" + AWS_REGION + ".amazonaws.com/" + AWS_BUCKET_NAME + "/" + data.photo_key;
+	if (AWS_REGION == "us-east-1") {
+		img.src = "https://s3" + ".amazonaws.com/" + AWS_BUCKET_NAME + "/" + data.photo_key;
+	} else {
+		img.src = "https://s3-" + AWS_REGION + ".amazonaws.com/" + AWS_BUCKET_NAME + "/" + data.photo_key;
+	}
 
 	var photo_labels = document.createElement("div");
 	photo_labels.className = "photo-labels";
