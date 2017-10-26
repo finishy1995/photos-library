@@ -15,7 +15,26 @@
         "S3LibraryBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": {"Ref" : "LibraryBucketName"}
+                "BucketName": {"Ref" : "LibraryBucketName"},
+				"CorsConfiguration": {
+                    "CorsRules": [
+                        {
+                            "AllowedHeaders": [
+                                "*"
+                            ],
+                            "AllowedMethods": [
+                                "GET",
+								"PUT",
+								"POST"
+                            ],
+                            "AllowedOrigins": [
+                                "*"
+                            ],
+                            "Id": "myCORSRuleId1",
+                            "MaxAge": "3600"
+                        }
+					]
+				}
             }
         },
         "S3LibraryBucketPolicy": {
