@@ -225,7 +225,7 @@
             "Description" : "Cognito Identity Pool Id."
         },
         "ESEndpoint": {
-            "Value": { "Fn::GetAtt" : [ "Elasticsearch", "DomainEndpoint" ] },
+            "Value": {"Fn::Join": ["", ["http://", {"Fn::GetAtt": ["Elasticsearch", "DomainEndpoint"]}]]},
             "Description" : "Elasticsearch endpoint."
         }
     }
