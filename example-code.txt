@@ -1,4 +1,4 @@
-// Part 1
+// Part 1. This part detect explicit or suggestive adult content and allow legal image uploaded.
 var param1 = {MinConfidence: MODERATION_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
 rekognition.detectModerationLabels(param1, function(err, data) {
 	if (err == null) {
@@ -13,7 +13,7 @@ rekognition.detectModerationLabels(param1, function(err, data) {
 	}
 });
 
-// Part 2
+// Part 2. This part detect image labels and store the labels and confidence in the array "file_labels".
 var param2 = {MaxLabels: MAX_LABELS, MinConfidence: LABELS_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
 file_labels = [];
 rekognition.detectLabels(param2, function(err, data) {

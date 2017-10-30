@@ -1,3 +1,5 @@
+// File means the image file which you uploaded.
+// "file_labels" records the labels which detect from the image by Amazon Rekognition.
 var file = '';
 var file_type = '';
 var file_key = '';
@@ -20,7 +22,7 @@ function Unauthenticated_Login() {
 	});
 }
 
-// Change file data to blob
+// Change file data to blob.
 function dataURItoBlob(dataURI) {
 	var byteString = atob(dataURI.split(',')[1]);
 
@@ -33,10 +35,10 @@ function dataURItoBlob(dataURI) {
 	return ab;
 }
 
-//  Get random string
+//  Get random string as S3 image object name.
 function randomString(len) {
 　　len = len || 32;
-　　var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+　　var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 　　var maxPos = $chars.length;
 　　var pwd = '';
 　　for (i = 0; i < len; i++) {
@@ -45,7 +47,7 @@ function randomString(len) {
 　　return pwd;
 }
 
-// Transfer array to string
+// Transfer array to string.
 function arrayToString(arr) {
 	var len = arr.length;
   　var tree = "[";
@@ -121,11 +123,17 @@ function Detect_Image_Moderation() {
 		var rekognition = new AWS.Rekognition();
 		
 		// Your code here.
+        // Part 1. Detect explicit or suggestive adult content. You can use "MODERATION_MIN_CONFIDENCE" as confidence setting.
+        // After you get data from Amazon Rekognition successfully, you should call "Upload_Photos" function to upload the image.
+        
+        // Part 2. Detect image labels and store the labels and confidence in the array "file_labels".
+        // You can use "MAX_LABELS" as maximum labels setting, and "LABELS_MIN_CONFIDENCE" as confidence setting.
+        // Do not forget to empty the array "file_labels" and push items like [label_name, label_confidence] in the array "file_labels".
 	}
 	reader.readAsDataURL(file);
 }
 
-// Upload photos after detected
+// Upload photos after detected.
 function Upload_Photos() {
 	var S3 = new AWS.S3();
 	var current_time = new Date();
@@ -147,7 +155,7 @@ function Upload_Photos() {
 	});
 }
 
-// Post photos information to Elasticsearch 
+// Post photos information to Elasticsearch.
 function Post_To_ES() {
 	var data = {
 		"photo_key": file_key,
@@ -167,7 +175,7 @@ function Post_To_ES() {
     obj.send(JSON.stringify(data));
 }
 
-// Show photos sorted by time
+// Show photos by searching from Elasticsearch.
 function Show_Photos(search_key) {
 	var obj = new XMLHttpRequest();
 	if (search_key == '') {
@@ -240,7 +248,7 @@ function Show_Photos(search_key) {
 	obj.send();
 }
 
-// Draw one photo in the web
+// Draw one photo in the web.
 function Draw_Photo(data) {
 	var image_height = (document.getElementById("photos-module").offsetWidth - 60) / 4 - 30;
 
@@ -274,6 +282,7 @@ function Draw_Photo(data) {
 
 	var data_labels = eval(data.photo_labels);
 
+    // Photo label color setting. You can change the color setting as you want.
 	for (var i = 0; i < data_labels.length; i++) {
 		photo_label = document.createElement("span");
 		photo_label_text = document.createTextNode(data_labels[i][0]);
@@ -302,13 +311,13 @@ function Draw_Photo(data) {
 	return photo_block;
 }
 
-// Search photos by labels
+// Search photos by labels.
 function Search_Photos() {
 	var search_key = document.getElementById("photos-search-input").value;
 	Show_Photos(search_key);
 }
 
-// Get keyboard input
+// Get keyboard input.
 function Get_Key(evt) {
 	evt = (evt) ? evt : ((window.event) ? window.event : "");
 	var key = evt.keyCode ? evt.keyCode : evt.which;
@@ -318,7 +327,7 @@ function Get_Key(evt) {
 	}
 }
 
-// Load Demo Photos for testing
+// Load Demo Photos for testing.
 function Load_Demo_Photos() {
 	alert("This function has not been on-line, coming soon ...");
 }
