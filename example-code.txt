@@ -3,13 +3,18 @@ var param1 = {MinConfidence: MODERATION_MIN_CONFIDENCE, Image: {Bytes:dataURItoB
 rekognition.detectModerationLabels(param1, function(err, data) {
 	if (err == null) {
 		if (data.ModerationLabels.length > 0) {
+			var modal = document.getElementsByClassName("modal");
+			modal[0].style.display = "none";
 			alert("We detect explicit or suggestive adult content in your images. Please choose another one!");
 			return;
 		}
 
 		Upload_Photos();
 	} else {
+		var modal = document.getElementsByClassName("modal");
+		modal[0].style.display = "none";
 		console.log(err);
+		alert("Something failure during detect explicit or suggestive adult content, please try it again later.");
 	}
 });
 
@@ -22,6 +27,9 @@ rekognition.detectLabels(param2, function(err, data) {
 			file_labels.push([data.Labels[i].Name, Math.round(data.Labels[i].Confidence * 100) / 100]);
 		}
 	} else {
+		var modal = document.getElementsByClassName("modal");
+		modal[0].style.display = "none";
 		console.log(err);
+		alert("Something failure during detect photo labels, please try it again later.");
 	}
 });
