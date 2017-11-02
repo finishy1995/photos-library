@@ -117,6 +117,9 @@ function Detect_And_Upload_Photos(obj) {
 // Detect image moderation.
 // You can complete the following code by yourself. Or copy the default code.
 function Detect_Image_Moderation() {
+	var modal = document.getElementsByClassName("modal");
+	modal[0].style.display = "block";
+
 	var reader = new FileReader();
 
 	reader.onload = function () {
@@ -125,7 +128,7 @@ function Detect_Image_Moderation() {
 		// Your code here.
         // Part 1. Detect explicit or suggestive adult content. You can use "MODERATION_MIN_CONFIDENCE" as confidence setting.
         // After you get data from Amazon Rekognition successfully, you should call "Upload_Photos" function to upload the image.
-        
+
         // Part 2. Detect image labels and store the labels and confidence in the array "file_labels".
         // You can use "MAX_LABELS" as maximum labels setting, and "LABELS_MIN_CONFIDENCE" as confidence setting.
         // Do not forget to empty the array "file_labels" and push items like [label_name, label_confidence] in the array "file_labels".
@@ -150,6 +153,8 @@ function Upload_Photos() {
 			Post_To_ES();
 		} else {
 			console.log(err);
+			var modal = document.getElementsByClassName("modal");
+			modal[0].style.display = "none";
 			alert("Something failure during photo uploading, please try it again later.");
 		}
 	});
@@ -169,6 +174,8 @@ function Post_To_ES() {
 	
 	obj.onreadystatechange = function() {
     	if (obj.readyState == 4 && (obj.status == 200 || obj.status == 304 || obj.status == 201)) {
+			var modal = document.getElementsByClassName("modal");
+			modal[0].style.display = "none";
 			alert("Upload successfully!");
         }
     };
