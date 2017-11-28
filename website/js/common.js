@@ -1,5 +1,5 @@
-// File means the image file which you uploaded.
-// "file_labels" records the labels which detect from the image by Amazon Rekognition.
+// File means the photo file which you uploaded.
+// "file_labels" records the labels which detect from the photo by Amazon Rekognition.
 var file = '';
 var file_type = '';
 var file_key = '';
@@ -127,11 +127,11 @@ function Detect_Image_Moderation() {
 		
 		// Your code here.
         // Part 1. Detect explicit or suggestive adult content. You can use "MODERATION_MIN_CONFIDENCE" as confidence setting.
-        // After you get data from Amazon Rekognition successfully, you should call "Upload_Photos" function to upload the image.
+        // After you get data from Amazon Rekognition successfully, you should call "Upload_Photos" function to upload the photo.
 
-        // Part 2. Detect image labels and store the labels and confidence in the array "file_labels".
+        // Part 2. Detect photo labels and store the labels and confidence in the array "file_labels".
         // You can use "MAX_LABELS" as maximum labels setting, and "LABELS_MIN_CONFIDENCE" as confidence setting.
-        // Do not forget to empty the array "file_labels" and push items like [label_name, label_confidence] in the array "file_labels".
+        // Do NOT forget to empty the array "file_labels" and push items like [label_name, label_confidence] in the array "file_labels".
 	}
 	reader.readAsDataURL(file);
 }
@@ -336,7 +336,7 @@ function Get_Key(evt) {
 
 // Load Demo Photos for testing.
 function Load_Demo_Photos() {
-	alert("This function has not been on-line, coming soon ...");
+	alert("This function has not been launch, coming soon ...");
 }
 
 Unauthenticated_Login();

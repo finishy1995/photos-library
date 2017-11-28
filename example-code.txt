@@ -1,11 +1,11 @@
-// Part 1. This part detect explicit or suggestive adult content and allow legal image uploaded.
+// Part 1. This part detect explicit or suggestive adult content and upload legal photo.
 var param1 = {MinConfidence: MODERATION_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
 rekognition.detectModerationLabels(param1, function(err, data) {
 	if (err == null) {
 		if (data.ModerationLabels.length > 0) {
 			var modal = document.getElementsByClassName("modal");
 			modal[0].style.display = "none";
-			alert("We detect explicit or suggestive adult content in your images. Please choose another one!");
+			alert("We detect explicit or suggestive adult content in your photos. Please choose another one!");
 			return;
 		}
 
@@ -18,7 +18,7 @@ rekognition.detectModerationLabels(param1, function(err, data) {
 	}
 });
 
-// Part 2. This part detect image labels and store the labels and confidence in the array "file_labels".
+// Part 2. This part detect photo labels and store the labels and confidence in the array "file_labels".
 var param2 = {MaxLabels: MAX_LABELS, MinConfidence: LABELS_MIN_CONFIDENCE, Image: {Bytes:dataURItoBlob(reader.result)}};
 file_labels = [];
 rekognition.detectLabels(param2, function(err, data) {
